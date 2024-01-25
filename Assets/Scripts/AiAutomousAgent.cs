@@ -5,9 +5,10 @@ using UnityEngine;
 
 public class AiAutomousAgent : AIAgent
 {
-    public AiPerception seekPerception = null;
-    public AiPerception fleePerception = null;
-    public AiPerception flockPerception = null;
+	[SerializeField] AiPerception seekPerception = null;
+	[SerializeField] AiPerception fleePerception = null;
+	[SerializeField] AiPerception flockPerception = null;
+	[SerializeField] AiPerception obstaclePerception = null;
     private void Update()
     {
         // seek
@@ -41,10 +42,29 @@ public class AiAutomousAgent : AIAgent
 				movement.ApplyForce(Separation(gameObjects, 3));
 				movement.ApplyForce(Alignment(gameObjects));
 			}
-
-			// wraps position in world
-			transform.position = Utilities.Wrap(transform.position, new Vector3(-10, -10, -10), new Vector3(10, 10, 10));
 		}
+
+		// obstacle avoidance
+		if (obstaclePerception != null)
+		{
+			if (((AISphereCastPerception)obstaclePerception).CheckDirection(Vector3.forward))
+			{
+				Vector3 open = Vector3.zero;
+				if (((AISphereCastPerception)obstaclePerception).GetOpenDirection(ref open))
+				{
+					movement.ApplyForce(GetSteeringForce(open) * 5);
+				}
+			}
+			var gameObjects = obstaclePerception.GetGameObjects();
+		}
+
+		// cancel y movement
+		Vector3 acceleration = movement.Acceleration;
+		acceleration.y = 0;
+		movement.Acceleration = acceleration;
+
+		// wraps position in world
+		transform.position = Utilities.Wrap(transform.position, new Vector3(-10, -10, -10), new Vector3(10, 10, 10));
 	}
 
     private Vector3 Seek(GameObject target)

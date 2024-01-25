@@ -95,7 +95,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f6e6754892fffa043abbb3005a6149eb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  maxSpeed: 4
+  maxSpeed: 6
   minSpeed: 4
   maxForce: 5
   turnRate: 90
